@@ -50,8 +50,6 @@ class SleepTrackerFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val adapter = SleepNightAdapter()
-        binding.sleepList.adapter = adapter
-
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentSleepTrackerBinding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_sleep_tracker, container, false)
@@ -100,7 +98,13 @@ class SleepTrackerFragment : Fragment() {
                 // popping the stack to get the correct behavior if we press stop multiple times
                 // followed by back.
                 // Also: https://stackoverflow.com/questions/28929637/difference-and-uses-of-oncreate-oncreateview-and-onactivitycreated-in-fra
-                this.findNavController().navigate(
+
+                sleepTrackerViewModel.nights.observe(viewLifecycleOwner, Observer {
+                    it?.let {
+                        adapter.data = it
+                    }
+                })
+                 this.findNavController().navigate(
                         SleepTrackerFragmentDirections
                                 .actionSleepTrackerFragmentToSleepQualityFragment(night.nightId))
                 // Reset state to make sure we only navigate once, even if the device
